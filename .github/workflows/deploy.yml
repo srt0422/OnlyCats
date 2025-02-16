@@ -1,0 +1,67 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+      - 001-simplified-cat-pics
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: graphical-bus-433219-g5
+  SERVICE_NAME: only-cats
+  REGION: us-central1
+  DB_INSTANCE_NAME: onlycats-db
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
+      - name: Build and Push Container
+        run: |-
+          docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} .
+          docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
+
+      - name: Get Cloud SQL Instance Connection Name
+        id: db
+        run: |-
+          echo "connection_name=$(gcloud sql instances describe $DB_INSTANCE_NAME --format='value(connectionName)')" >> $GITHUB_OUTPUT
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          env_vars: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+          vpc_connector: serverless-vpc
+          cloudsql_instances: ${{ steps.db.outputs.connection_name }}
+          service_account_email: cloud-sql-proxy@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: Show Output
+        run: echo ${{ steps.deploy.outputs.url }} 
