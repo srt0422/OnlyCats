@@ -79,13 +79,19 @@ test.describe('Home Page - User Story V1', () => {
   });
 
   test('displays total votes counter', async ({ page }) => {
-    // Check for stats overview section
+    // Wait for the stats overview section
     const statsSection = await page.locator('.soft-ui-stats').first();
     await expect(statsSection).toBeVisible();
 
-    // Verify total votes counter exists and has a number
-    const votesCounter = await statsSection.locator('text=/[0-9]+ votes/i');
-    await expect(votesCounter).toBeVisible();
+    // Verify total votes label
+    const votesLabel = await statsSection.locator('text=Total Votes');
+    await expect(votesLabel).toBeVisible();
+
+    // Verify total votes number exists and is a number
+    const votesNumber = await statsSection.locator('.text-2xl.font-semibold');
+    await expect(votesNumber).toBeVisible();
+    const votesText = await votesNumber.textContent();
+    expect(parseInt(votesText || '0')).toBeGreaterThanOrEqual(0);
   });
 
   test('displays action buttons for each cat', async ({ page }) => {
