@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #cb0c9f;
+    --color-secondary: #8392ab;
+    --color-success: #82d616;
+    --color-info: #17c1e8;
+    --color-warning: #fbcf33;
+    --color-danger: #ea0606;
+    --color-light: #e9ecef;
+    --color-dark: #344767;
+  }
+
+  body {
+    @apply bg-gray-100 text-gray-700 antialiased min-h-screen;
+  }
+}
+
+@layer components {
+  /* Soft UI Card Styles */
+  .soft-ui-card {
+    @apply bg-white rounded-xl overflow-hidden transition-all duration-300 shadow-soft-lg;
+  }
+
+  .soft-ui-card:hover {
+    @apply -translate-y-1 shadow-soft-xl;
+  }
+
+  /* Soft UI Button Styles */
+  .soft-ui-button {
+    @apply px-6 py-3 rounded-lg font-medium transition-all duration-200 
+           relative overflow-hidden shadow-soft-sm hover:shadow-soft-md;
+  }
+
+  .soft-ui-button-primary {
+    @apply soft-ui-button text-white bg-gradient-primary;
+  }
+
+  .soft-ui-button-secondary {
+    @apply soft-ui-button text-white bg-gradient-secondary;
+  }
+
+  /* Soft UI Input Styles */
+  .soft-ui-input {
+    @apply px-4 py-2 rounded-lg border border-gray-200 
+           focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+           bg-white/80 backdrop-blur-sm;
+  }
+
+  /* Soft UI Badge Styles */
+  .soft-ui-badge {
+    @apply px-3 py-1 text-xs font-medium rounded-lg inline-flex items-center;
+  }
+
+  .soft-ui-badge-primary {
+    @apply soft-ui-badge text-primary bg-primary/10;
+  }
+
+  .soft-ui-badge-success {
+    @apply soft-ui-badge text-success bg-success/10;
+  }
+
+  /* Soft UI Layout Components */
+  .soft-ui-sidebar {
+    @apply fixed top-0 left-0 h-full w-64 bg-white shadow-soft-xl z-50
+           transform transition-transform duration-300;
+  }
+
+  .soft-ui-navbar {
+    @apply sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-soft-sm
+           border-b border-gray-200;
+  }
+
+  .soft-ui-content {
+    @apply min-h-screen pt-16 pb-12 px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Soft UI Grid Layout */
+  .soft-ui-grid {
+    @apply grid gap-6 md:gap-8;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  /* Soft UI Stats Card */
+  .soft-ui-stats {
+    @apply soft-ui-card p-4 flex items-center justify-between;
+  }
+
+  .soft-ui-stats-icon {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center text-white bg-gradient-primary;
+  }
+}
+
+/* Custom Animations */
+@keyframes softFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-soft-float {
+  animation: softFloat 3s ease-in-out infinite;
+}
+
+/* Toast Notifications */
+.soft-ui-toast {
+  @apply fixed bottom-4 right-4 p-4 rounded-xl shadow-soft-lg 
+         transform transition-all duration-300
+         backdrop-blur-sm;
+}
+
+.soft-ui-toast-success {
+  @apply bg-success/10 text-success border-l-4 border-success;
+}
+
+.soft-ui-toast-error {
+  @apply bg-danger/10 text-danger border-l-4 border-danger;
+}
